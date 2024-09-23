@@ -1,0 +1,118 @@
+body {
+    font-family: Georgia,serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-image: url('wp3294060-world-map-4k-wallpapers.jpg');
+}
+
+.login-container {
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+h1 {
+    color: #f8f5f5;
+    -webkit-text-stroke-width: 1.5px; 
+    -webkit-text-stroke-color: black;
+    font-size: 2.8em;
+    margin-bottom: 50px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+}
+
+label {
+    margin-bottom: 20px;
+    color: #ffffff;
+    font-size: 1.8em;
+    -webkit-text-stroke-width: 0.5px; 
+    -webkit-text-stroke-color: black;
+}
+
+input {
+    margin-bottom: 50px;
+    padding: 10px;
+    border: 3px solid rgb(12, 12, 12); /* Set border color to black */
+    border-radius: 4px;
+    font-size: 1.8em;
+}
+
+button {
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: 3px solid #000; /* Set border color to black */
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.8em;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#error-message {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 1.8em;
+}
+
+.password-container {
+    position: relative;
+}
+
+.show-password-container {
+    position: flex;
+    top: 50px;
+    right: 10px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+}
+
+#showPassword {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 1px solid #0e0d0d; /* Set border color to black */
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+label[for="showPassword"] {
+    font-size: 1.2em;
+    color: #f9f7f7;
+    cursor: pointer;
+    -webkit-text-stroke-width: 0.2px; 
+    -webkit-text-stroke-color: black;
+}
+
+#showPassword:checked {
+    background-color: #007bff;
+    border: 1px solid #000; /* Set border color to black */
+}
+
+#showPassword:checked::before {
+    color: #fff;
+    font-size: 14px;
+    position: flex;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

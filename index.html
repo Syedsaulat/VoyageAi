@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoyagAI: Your Personal Voice Assistant</title>
+    <script> function updateSearchBarAndSubmit(query) {
+        document.getElementById('user-input').value = query;
+        performSearch();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        function startSpeechRecognition() {
+            const recognition = new webkitSpeechRecognition() || speechRecognition();
+
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onresult = function (event) {
+                const speechResult = event.results[0][0].transcript.toLowerCase();
+                console.log('Speech Result:', speechResult);
+
+                if (speechResult.includes('search for a place')) {
+                    const placeName = speechResult.replace('search for a place', '').trim();
+                    updateSearchBarAndSubmit(placeName);
+                } else if (speechResult.includes('directions')) {
+                   
+                } else if (speechResult.includes('current location')) {
+                   
+                } else {
+                    
+                }
+            };
+
+            recognition.start();
+        }
+        startSpeechRecognition();
+    });
+    </script>
+    <script defer src=""/*Your Google maps API*/></script>
+
+    <style>
+        body {
+    background-image: url('/static/wp3294060-world-map-4k-wallpapers.jpg');
+}
+
+        h1 {
+            color: #fff;
+            font-family: Georgia, serif;
+            text-align: center; /* Updated to center the text */
+            margin-top: -100px; /* Adjust the margin-top as needed */
+        }
+
+        
+        .logo img {
+    width: 150px;
+    height: 150px;
+    content: url('{{ url_for("static", filename="Blue and White Minimalist Travel App Logo.png") }}');
+}
+
+        #map {
+            height: 500px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        #search-container {
+            width:500px;
+            display: flex;
+            flex-direction: row; 
+            margin-top: 5px;
+            margin-left: 1013px;
+        }
+
+        #user-input {
+            width: 50%;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        #search-button {
+            width:13%;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            margin-bottom: 10px;
+            margin-top: auto;
+        }
+
+        #directions-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        #from-input {
+            margin-top: 100px;
+            width: 30%;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        #to-input {
+            margin-top: 100px;
+            width: 30%;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        #directions-button {
+            margin-top: 90px;
+            display: flex;
+            flex-direction: row;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        #current-location-button {
+            position: flex;
+            top: -1000px;
+            right: 10px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <nav><label class="logo"><img src="D:\PBL\templates\Blue and White Minimalist Travel App Logo.png"></label></nav>
+    <h1>VoyageAI</h1>
+
+    <div id="search-container">
+        <input type="text" id="user-input" placeholder="Search for a place...">
+        <button id="search-button" onclick="performSearch()">Search</button>
+    </div>
+
+    <div id="directions-container">
+        <input type="text" id="from-input" placeholder="From...">
+        <input type="text" id="to-input" placeholder="To...">
+        <button id="directions-button" onclick="calculateAndDisplayRoute()">Get Directions</button>
+    </div>
+
+    <div id="map"></div>
+    <button id="current-location-button" onclick="showCurrentLocation()">Show Current Location</button>
+
+    <script>
+        const googleMapsApiKey = 'AIzaSyAj3op6dxgTjp7jRvenScEWgRE2pUDNZ44';
+        let map;
+        let userMarker;
+        let directionsService;
+        let directionsDisplay;
+        let autocompleteUserInput;
+        let autocompleteFromInput;
+        let autocompleteToInput;
+
+        function searchForPlace(placeName) {
+            document.getElementById('user-input').value = placeName;
+            performSearch();
+            console.log(`Search initiated for: ${placeName}`);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            function startSpeechRecognition() {
+                const recognition = new webkitSpeechRecognition() || speechRecognition();
+
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                recognition.onresult = function (event) {
+                    const speechResult = event.results[0][0].transcript.toLowerCase();
+                    console.log('Speech Result:', speechResult);
+
+                    if (speechResult.includes('search for a place')) {
+                        const placeName = speechResult.replace('search for a place', '').trim();
+                        searchForPlace(placeName);
+                    } else if (speechResult.includes('directions')) {
+                        // ... (existing code for directions)
+                    } else if (speechResult.includes('current location')) {
+                        // ... (existing code for current location)
+                    } else {
+                        // Handle other commands or provide feedback to the user
+                    }
+                };
+
+                recognition.start();
+            }
+
+            // Call the function to start speech recognition
+            startSpeechRecognition();
+        });
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 0, lng: 0 },
+                zoom: 2,
+                mapTypeId: google.maps.MapTypeId.SATELLITE
+            });
+
+            directionsService = new google.maps.DirectionsService();
+            directionsDisplay = new google.maps.DirectionsRenderer();
+            directionsDisplay.setMap(map);
+
+            autocompleteUserInput = new google.maps.places.Autocomplete(document.getElementById('user-input'));
+            autocompleteFromInput = new google.maps.places.Autocomplete(document.getElementById('from-input'));
+            autocompleteToInput = new google.maps.places.Autocomplete(document.getElementById('to-input'));
+
+            getUserLocation();
+        }
+
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+
+                        map.setCenter(userLocation);
+                        addUserMarker(userLocation);
+                    },
+                    error => {
+                        console.error('Error getting user location:', error);
+                    }
+                );
+            } else {
+                console.error('Geolocation is not supported by this browser.');
+            }
+        }
+
+        function addUserMarker(location) {
+            if (userMarker) {
+                userMarker.setMap(null);
+            }
+
+            userMarker = new google.maps.Marker({
+                position: location,
+                map: map,
+                title: 'Your Location'
+            });
+        }
+
+        function performSearch() {
+            const query = document.getElementById('user-input').value;
+
+            if (query) {
+                const geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ address: query }, (results, status) => {
+                    if (status === 'OK' && results.length > 0) {
+                        const resultLocation = results[0].geometry.location;
+                        map.setCenter(resultLocation);
+                        map.setZoom(15);
+                        addUserMarker(resultLocation);
+                        displayLocationDetails(results[0].place_id);
+                    } else {
+                        console.error('Geocoding failed:', status);
+                    }
+                });
+            }
+        }
+
+        function calculateAndDisplayRoute() {
+            const from = document.getElementById('from-input').value;
+            const to = document.getElementById('to-input').value;
+
+            if (from && to) {
+                const request = {
+                    origin: from,
+                    destination: to,
+                    travelMode: google.maps.TravelMode.DRIVING
+                };
+
+                directionsService.route(request, (result, status) => {
+                    if (status === google.maps.DirectionsStatus.OK) {
+                        directionsDisplay.setDirections(result);
+                    } else {
+                        console.error('Directions request failed:', status);
+                    }
+                });
+            }
+        }
+
+        function displayLocationDetails(placeId) {
+            // Your existing code for displaying location details
+            // ...
+        }
+
+        function showCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const currentLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+
+                        map.setCenter(currentLocation);
+                        map.setZoom(15);
+                        addUserMarker(currentLocation);
+                    },
+                    error => {
+                        console.error('Error getting current location:', error);
+                    }
+                );
+            } else {
+                console.error('Geolocation is not supported by this browser.');
+            }
+        }
+
+        function performBackendAction(command) {
+            fetch('/api/command', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'command': command,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // Handle the response if needed
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+    
+</body>
+
+</html>
